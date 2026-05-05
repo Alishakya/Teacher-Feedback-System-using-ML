@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Student Portal{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/sstyles.css' %}">
+{% endblock %}
+
+{% block sidebar_links %}
+<a href="#" class="active" data-page="profile"><i class="fas fa-user"></i> Profile</a>
+<a href="{% url 'student_feedback' %}" data-page="feedback"><i class="fas fa-comments"></i> Feedback{% if active_sessions %}<span class="badge">{{ active_sessions|length }}</span>{% endif %}</a>
+{% endblock %}
+
+{% block logout_url %}{% url 'logout' %}{% endblock %}
+
+{% block content %}
+<!-- Profile Page -->
+<div class="page active" id="profile-page">
+    <div class="page-header">
+        <h1>Student Profile</h1>
+    </div>
+    
+    <div class="profile-container">
+        <div class="profile-info">
+            <img src="{{ student.image.url }}" alt="Student Profile" class="profile-image">
+            <div class="info-details">
+                <h2>{{ student.user.username }}</h2>
+                <p><i class="fas fa-phone"></i> Contact: {{ student.contact }}</p>
+                <p><i class="fas fa-id-card"></i> UID: {{ student.uid }}</p>
+                <p><i class="fas fa-university"></i> Faculty: {{ student.faculty.faculty_name }}</p>
+                <p><i class="fas fa-graduation-cap"></i> Semester: {{ student.semester.semester_number }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <h2 style="margin-top: 30px;">Assigned Teachers</h2>
+    <div class="teacher-container">
+        {% for teacher in assigned_teachers %}
+        <div class="teacher-card">
+            <img src="{{ teacher.image.url }}" alt="Teacher Image" class="teacher-image">
+            <h3>{{ teacher.name }}</h3>
+            <p><i class="fas fa-phone"></i> {{ teacher.contact }}</p>
+        </div>
+        {% empty %}
+        <p>No teachers assigned to your class.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

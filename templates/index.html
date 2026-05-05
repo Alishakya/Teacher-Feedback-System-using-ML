@@ -1,0 +1,474 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Admin Panel{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Dashboard Overview</h1>
+</div>
+
+<!-- Statistics Cards -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <h3><i class="fas fa-user-graduate"></i> {{ total_students }}</h3>
+        <p>Total Students</p>
+        <a href="{% url 'total_students' %}" class="btn btn-light btn-sm mt-2">All Students</a>
+        <a href="{% url 'students' %}" class="btn btn-outline-light btn-sm mt-2">Manage</a>
+    </div>
+    <div class="stat-card" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+        <h3><i class="fas fa-chalkboard-teacher"></i> {{ total_teachers }}</h3>
+        <p>Total Teachers</p>
+        <a href="{% url 'total_teachers' %}" class="btn btn-light btn-sm mt-2">All Teachers</a>
+        <a href="{% url 'teachers' %}" class="btn btn-outline-light btn-sm mt-2">Manage</a>
+    </div>
+    <div class="stat-card" style="background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);">
+        <h3><i class="fas fa-university"></i> {{ total_faculties }}</h3>
+        <p>Total Faculties</p>
+        <a href="{% url 'faculty' %}" class="btn btn-light btn-sm mt-2">View Faculties</a>
+    </div>
+</div>
+
+<!-- Monthly Feedback Trend Chart -->
+<div class="card" style="margin-top: 25px;">
+    <div class="page-header">
+        <h2><i class="fas fa-chart-line"></i> Monthly Feedback Trend</h2>
+    </div>
+    <div style="padding: 20px;">
+        {% if monthly_feedback_data.labels %}
+        <div style="max-width: 800px; margin: 0 auto;">
+            <canvas id="monthlyTrendChart"></canvas>
+        </div>
+        <script>
+        const monthlyCtx = document.getElementById('monthlyTrendChart').getContext('2d');
+        new Chart(monthlyCtx, {
+            type: 'line',
+            data: {
+                labels: {{ monthly_feedback_data.labels|safe }},
+                datasets: [{
+                    label: 'Feedback Responses',
+                    data: {{ monthly_feedback_data.values|safe }},
+                    borderColor: 'rgba(0, 123, 255, 1)',
+                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: 'rgba(0, 123, 255, 1)',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: { font: { size: 14 } }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1, font: { size: 12 } },
+                        grid: { color: 'rgba(0,0,0,0.05)' },
+                        title: { display: true, text: 'Number of Feedback Responses', font: { size: 13 } }
+                    },
+                    x: {
+                        ticks: { font: { size: 12 } },
+                        grid: { display: false },
+                        title: { display: true, text: 'Month', font: { size: 13 } }
+                    }
+                }
+            }
+        });
+        </script>
+        {% else %}
+        <p style="text-align: center; color: #666; padding: 40px;">
+            <i class="fas fa-chart-line" style="font-size: 48px; color: #ddd; margin-bottom: 15px;"></i><br>
+            No feedback data available yet.
+        </p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Session Histograms Pagination -->
+<div class="card" style="margin-top: 25px;">
+    <div class="page-header">
+        <h2><i class="fas fa-history"></i> Feedback Session Analysis</h2>
+    </div>
+    <div style="padding: 20px;">
+        {% if has_sessions and session_data %}
+        <div class="session-pagination">
+            {% for item in session_data %}
+            <div class="session-histogram-card {% if forloop.first %}active{% endif %}" data-session="{{ forloop.counter0 }}">
+                <div class="session-header-info">
+                    <h4>{{ item.session.faculty.faculty_name }} - Semester {{ item.session.semester.semester_number }}</h4>
+                    <p class="session-dates">
+                        <i class="fas fa-calendar"></i> 
+                        {{ item.session.start_date }} to {{ item.session.end_date }}
+                        <span class="status-badge {{ item.session.status }}">{{ item.session.status|title }}</span>
+                    </p>
+                </div>
+                
+                <div class="session-chart-container" id="session-chart-{{ forloop.counter0 }}" style="display: {% if forloop.first %}block{% else %}none{% endif %};">
+                    {% if item.has_data %}
+                    <div style="max-width: 600px; margin: 0 auto;">
+                        <canvas id="sessionBarChart-{{ forloop.counter0 }}"></canvas>
+                    </div>
+                    <script>
+                    (function() {
+                        const ctx{{ forloop.counter0 }} = document.getElementById('sessionBarChart-{{ forloop.counter0 }}').getContext('2d');
+                        const labels{{ forloop.counter0 }} = [{% for ts in item.teacher_stats %}'{{ ts.teacher.name|truncatechars:15 }}'{% if not forloop.last %}, {% endif %}{% endfor %}];
+                        const positive{{ forloop.counter0 }} = [{% for ts in item.teacher_stats %}{{ ts.positive }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+                        const neutral{{ forloop.counter0 }} = [{% for ts in item.teacher_stats %}{{ ts.neutral }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+                        const negative{{ forloop.counter0 }} = [{% for ts in item.teacher_stats %}{{ ts.negative }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+                        
+                        new Chart(ctx{{ forloop.counter0 }}, {
+                            type: 'bar',
+                            data: {
+                                labels: labels{{ forloop.counter0 }},
+                                datasets: [
+                                    {
+                                        label: 'Positive',
+                                        data: positive{{ forloop.counter0 }},
+                                        backgroundColor: 'rgba(40, 167, 69, 0.8)',
+                                        borderColor: 'rgba(40, 167, 69, 1)',
+                                        borderWidth: 1
+                                    },
+                                    {
+                                        label: 'Neutral',
+                                        data: neutral{{ forloop.counter0 }},
+                                        backgroundColor: 'rgba(23, 162, 184, 0.8)',
+                                        borderColor: 'rgba(23, 162, 184, 1)',
+                                        borderWidth: 1
+                                    },
+                                    {
+                                        label: 'Negative',
+                                        data: negative{{ forloop.counter0 }},
+                                        backgroundColor: 'rgba(220, 53, 69, 0.8)',
+                                        borderColor: 'rgba(220, 53, 69, 1)',
+                                        borderWidth: 1
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    legend: { position: 'top' },
+                                    title: { display: true, text: 'Teacher-wise Feedback Distribution' }
+                                },
+                                scales: {
+                                    x: { stacked: true },
+                                    y: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 } }
+                                }
+                            }
+                        });
+                    })();
+                    </script>
+                    {% else %}
+                    <div class="no-data-message" style="text-align: center; padding: 40px; color: #666;">
+                        <i class="fas fa-comments" style="font-size: 48px; color: #ddd; margin-bottom: 15px;"></i>
+                        <p>No feedback responses for this session yet.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination Dots -->
+        <div class="pagination-dots" style="text-align: center; margin-top: 20px;">
+            {% for item in session_data %}
+            <span class="dot {% if forloop.first %}active{% endif %}" data-session="{{ forloop.counter0 }}" onclick="showSession({{ forloop.counter0 }})"></span>
+            {% endfor %}
+        </div>
+        
+        <script>
+        function showSession(index) {
+            // Hide all charts
+            document.querySelectorAll('.session-chart-container').forEach(el => el.style.display = 'none');
+            // Show selected chart
+            document.getElementById('session-chart-' + index).style.display = 'block';
+            // Update dots
+            document.querySelectorAll('.dot').forEach(el => el.classList.remove('active'));
+            document.querySelector('.dot[data-session="' + index + '"]').classList.add('active');
+        }
+        </script>
+        
+        <style>
+        .session-histogram-card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        .session-header-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            padding: 15px 20px;
+        }
+        .session-header-info h4 {
+            margin: 0 0 5px 0;
+            font-size: 1.1rem;
+        }
+        .session-dates {
+            margin: 0;
+            font-size: 0.9rem;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .status-badge {
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            background: rgba(255,255,255,0.2);
+        }
+        .status-badge.active { background: #28a745; }
+        .status-badge.closed { background: #dc3545; }
+        .session-chart-container {
+            padding: 20px;
+        }
+        .pagination-dots .dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ddd;
+            margin: 0 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .pagination-dots .dot.active {
+            background: #667eea;
+            transform: scale(1.2);
+        }
+        .pagination-dots .dot:hover {
+            background: #667eea;
+        }
+        </style>
+        {% else %}
+        <div class="coming-soon" style="text-align: center; padding: 60px 20px; background: #f8f9fa; border-radius: 10px;">
+            <i class="fas fa-calendar-alt" style="font-size: 64px; color: #ddd; margin-bottom: 20px;"></i>
+            <h3 style="color: #666; margin-bottom: 10px;">Coming Soon</h3>
+            <p style="color: #999;">No feedback sessions have been created yet.</p>
+            <p style="color: #adb5bd; font-size: 0.9rem;">Create a feedback session to see the analysis here.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Teacher Feedback Summary Table -->
+<div class="card" style="margin-top: 25px;">
+    <div class="page-header">
+        <h2><i class="fas fa-table"></i> Teacher Feedback Summary</h2>
+    </div>
+    <div style="padding: 0; overflow-x: auto;">
+        <table class="data-table" style="width: 100%; border-collapse: collapse; margin: 0;">
+            <thead style="background: #f8f9fa;">
+                <tr>
+                    <th style="padding: 15px 20px; text-align: left; font-weight: 600; color: #333; border-bottom: 2px solid #dee2e6;">Image</th>
+                    <th style="padding: 15px 20px; text-align: left; font-weight: 600; color: #333; border-bottom: 2px solid #dee2e6;">Name</th>
+                    <th style="padding: 15px 20px; text-align: left; font-weight: 600; color: #333; border-bottom: 2px solid #dee2e6;">Assigned Classes</th>
+                    <th style="padding: 15px 20px; text-align: center; font-weight: 600; color: #28a745; border-bottom: 2px solid #dee2e6;">Positive</th>
+                    <th style="padding: 15px 20px; text-align: center; font-weight: 600; color: #17a2b8; border-bottom: 2px solid #dee2e6;">Neutral</th>
+                    <th style="padding: 15px 20px; text-align: center; font-weight: 600; color: #dc3545; border-bottom: 2px solid #dee2e6;">Negative</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stat in teacher_stats %}
+                <tr style="border-bottom: 1px solid #dee2e6;">
+                    <td style="padding: 15px 20px;">
+                        {% if stat.teacher.image %}
+                        <img src="{{ stat.teacher.image.url }}" alt="{{ stat.teacher.name }}" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover;">
+                        {% else %}
+                        <div style="width: 45px; height: 45px; border-radius: 50%; background: #e9ecef; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-user" style="color: #adb5bd;"></i>
+                        </div>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 15px 20px; font-weight: 500;">{{ stat.teacher.name }}</td>
+                    <td style="padding: 15px 20px;">
+                        {% for assignment in stat.assignments %}
+                        <span style="display: inline-block; background: #e9ecef; padding: 3px 8px; border-radius: 4px; font-size: 12px; margin: 2px;">
+                            {{ assignment.faculty.faculty_name }} - Sem {{ assignment.semester.semester_number }}
+                        </span>
+                        {% empty %}
+                        <span style="color: #adb5bd;">No assignments</span>
+                        {% endfor %}
+                    </td>
+                    <td style="padding: 15px 20px; text-align: center;">
+                        <span style="background: #d4edda; color: #155724; padding: 5px 12px; border-radius: 20px; font-weight: 600;">
+                            {{ stat.positive_pct }}%
+                        </span>
+                    </td>
+                    <td style="padding: 15px 20px; text-align: center;">
+                        <span style="background: #d1ecf1; color: #0c5460; padding: 5px 12px; border-radius: 20px; font-weight: 600;">
+                            {{ stat.neutral_pct }}%
+                        </span>
+                    </td>
+                    <td style="padding: 15px 20px; text-align: center;">
+                        <span style="background: #f8d7da; color: #721c24; padding: 5px 12px; border-radius: 20px; font-weight: 600;">
+                            {{ stat.negative_pct }}%
+                        </span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="padding: 40px 20px; text-align: center; color: #666;">
+                        <i class="fas fa-chalkboard-teacher" style="font-size: 48px; color: #ddd; margin-bottom: 15px;"></i>
+                        <p>No teacher feedback data available.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- View Students Section -->
+<div id="view-students-section" class="section" style="display: none;">
+    <div class="card">
+        <div class="page-header">
+            <h2>View Students</h2>
+            <div class="filter-form">
+                <select id="faculty-filter" class="form-control" style="width: auto;">
+                    <option value="">All Faculties</option>
+                    {% for faculty in faculties %}
+                    <option value="{{ faculty.id }}">{{ faculty.faculty_name }}</option>
+                    {% endfor %}
+                </select>
+                <select id="semester-filter" class="form-control" style="width: auto;">
+                    <option value="">All Semesters</option>
+                    {% for semester in semesters %}
+                    <option value="{{ semester.id }}">Semester {{ semester.semester_number }}</option>
+                    {% endfor %}
+                </select>
+                <button class="btn btn-primary" onclick="filterStudents()">Filter</button>
+            </div>
+        </div>
+        
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>UID</th>
+                    <th>Username</th>
+                    <th>Contact</th>
+                    <th>Faculty</th>
+                    <th>Semester</th>
+                    <th>Enrollment Date</th>
+                </tr>
+            </thead>
+            <tbody id="students-tbody">
+                {% for student in students %}
+                <tr>
+                    <td><img src="{{ student.image.url }}" alt="Student"></td>
+                    <td>{{ student.uid }}</td>
+                    <td>{{ student.user.username }}</td>
+                    <td>{{ student.contact }}</td>
+                    <td>{{ student.faculty.faculty_name }}</td>
+                    <td>{{ student.semester.semester_number }}</td>
+                    <td>{{ student.enrollment_date }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align: center;">No students found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- View Teachers Section -->
+<div id="view-teachers-section" class="section" style="display: none;">
+    <div class="card">
+        <div class="page-header">
+            <h2>View Teachers</h2>
+        </div>
+        
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>TID</th>
+                    <th>Name</th>
+                    <th>Contact</th>
+                    <th>Assigned Classes</th>
+                </tr>
+            </thead>
+            <tbody id="teachers-tbody">
+                {% for teacher in teachers %}
+                <tr>
+                    <td><img src="{{ teacher.image.url }}" alt="Teacher"></td>
+                    <td>{{ teacher.tid }}</td>
+                    <td>{{ teacher.name }}</td>
+                    <td>{{ teacher.contact }}</td>
+                    <td>
+                        {% for assignment in teacher.assignclass_set.all %}
+                        {{ assignment.faculty.faculty_name }} - Sem {{ assignment.semester.semester_number }}<br>
+                        {% empty %}
+                        No assignments
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align: center;">No teachers found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- View Faculties Section -->
+<div id="view-faculties-section" class="section" style="display: none;">
+    <div class="card">
+        <div class="page-header">
+            <h2>View Faculties</h2>
+        </div>
+        
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Faculty Name</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for faculty in faculties %}
+                <tr>
+                    <td>{{ faculty.id }}</td>
+                    <td>{{ faculty.faculty_name }}</td>
+                    <td>{{ faculty.descriptions|default:"N/A" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" style="text-align: center;">No faculties found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function showSection(sectionId) {
+    document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+    document.getElementById(sectionId).style.display = 'block';
+}
+</script>
+{% endblock %}

@@ -1,0 +1,461 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - EduFeedback</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            display: flex;
+        }
+        
+        /* Left Side - Branding */
+        .login-branding {
+            width: 55%;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a365d 0%, #2c5282 50%, #3182ce 100%);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 60px;
+            overflow: hidden;
+        }
+        
+        .login-branding::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        .brand-content {
+            position: relative;
+            z-index: 1;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 50px;
+        }
+        
+        .brand-logo-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+        
+        .brand-logo-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .brand-logo-subtitle {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.7);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        
+        .brand-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8rem;
+            color: white;
+            line-height: 1.3;
+            margin-bottom: 25px;
+        }
+        
+        .brand-description {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.85);
+            line-height: 1.8;
+            margin-bottom: 40px;
+        }
+        
+        .brand-features {
+            list-style: none;
+        }
+        
+        .brand-features li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+            margin-bottom: 18px;
+            font-size: 1rem;
+        }
+        
+        .brand-features li i {
+            color: #68d391;
+            font-size: 1.2rem;
+        }
+        
+        .back-link {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            z-index: 10;
+        }
+        
+        .back-link a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            text-decoration: none;
+            font-size: 0.95rem;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link a:hover {
+            opacity: 1;
+        }
+        
+        /* Right Side - Login Form */
+        .login-form-section {
+            width: 45%;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px;
+            background: #fff;
+        }
+        
+        .login-form-container {
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .login-header {
+            margin-bottom: 40px;
+        }
+        
+        .login-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: #1a365d;
+            margin-bottom: 10px;
+        }
+        
+        .login-header p {
+            color: #718096;
+            font-size: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            color: #4a5568;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #1a365d;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(26, 54, 93, 0.1);
+        }
+        
+        .form-select {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            cursor: pointer;
+        }
+        
+        .form-select:focus {
+            outline: none;
+            border-color: #1a365d;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(26, 54, 93, 0.1);
+        }
+        
+        .btn-login {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(26, 54, 93, 0.35);
+        }
+        
+        /* Messages */
+        .messages {
+            margin-bottom: 25px;
+        }
+        
+        .message {
+            padding: 12px 18px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+        
+        .message.error {
+            background: #fed7d7;
+            color: #c53030;
+            border: 1px solid #feb2b2;
+        }
+        
+        .message.success {
+            background: #c6f6d5;
+            color: #2f855a;
+            border: 1px solid #9ae6b4;
+        }
+        
+        /* Footer Note */
+        .login-footer {
+            margin-top: 40px;
+            padding-top: 25px;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+        }
+        
+        .login-footer p {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+        
+        .login-footer a {
+            color: #1a365d;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .login-branding {
+                width: 100%;
+                min-height: auto;
+                padding: 100px 30px 60px;
+            }
+            
+            .brand-content {
+                text-align: center;
+                max-width: 100%;
+            }
+            
+            .brand-logo {
+                justify-content: center;
+            }
+            
+            .brand-features {
+                display: inline-block;
+                text-align: left;
+            }
+            
+            .login-form-section {
+                width: 100%;
+                min-height: auto;
+                padding: 60px 30px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .login-branding {
+                padding: 80px 20px 40px;
+            }
+            
+            .brand-title {
+                font-size: 2rem;
+            }
+            
+            .login-form-section {
+                padding: 40px 20px;
+            }
+            
+            .login-header h2 {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Left Side - Branding -->
+    <div class="login-branding">
+        <div class="back-link">
+            <a href="{% url 'landing' %}">
+                <i class="fas fa-arrow-left"></i>
+                Back to Home
+            </a>
+        </div>
+        
+        <div class="brand-content">
+            <div class="brand-logo">
+                <div class="brand-logo-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <div class="brand-logo-text">EduFeedback</div>
+                    <div class="brand-logo-subtitle">Academic Excellence</div>
+                </div>
+            </div>
+            
+            <h1 class="brand-title">Welcome Back</h1>
+            
+            <p class="brand-description">
+                Sign in to access your dashboard and manage feedback sessions efficiently.
+            </p>
+            
+            <ul class="brand-features">
+                <li>
+                    <i class="fas fa-check-circle"></i>
+                    Secure role-based authentication
+                </li>
+                <li>
+                    <i class="fas fa-check-circle"></i>
+                    Real-time ML sentiment analysis
+                </li>
+                <li>
+                    <i class="fas fa-check-circle"></i>
+                    Comprehensive analytics dashboard
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- Right Side - Login Form -->
+    <div class="login-form-section">
+        <div class="login-form-container">
+            <div class="login-header">
+                <h2>Sign In</h2>
+                <p>Enter your credentials to continue</p>
+            </div>
+            
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="message {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            {% if error %}
+            <div class="messages">
+                <div class="message error">{{ error }}</div>
+            </div>
+            {% endif %}
+            
+            <form method="POST" action="{% url 'login' %}">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="role">Role</label>
+                    <select id="role" name="role" class="form-select" required onchange="updatePlaceholder()">
+                        <option value="admin">Administrator</option>
+                        <option value="student">Student</option>
+                        <option value="teacher">Teacher</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="username" id="username-label">Username</label>
+                    <input type="text" id="username" name="username" class="form-control" placeholder="Enter your username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
+                </div>
+                
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Sign In
+                </button>
+            </form>
+            
+            <div class="login-footer">
+                <p>Need help? <a href="#">Contact Administrator</a></p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function updatePlaceholder() {
+            const role = document.getElementById('role').value;
+            const usernameInput = document.getElementById('username');
+            const label = document.getElementById('username-label');
+            
+            if (role === 'student') {
+                label.textContent = 'Username / UID';
+                usernameInput.placeholder = 'Enter username or UID (e.g., U0001)';
+            } else if (role === 'teacher') {
+                label.textContent = 'Username / TID';
+                usernameInput.placeholder = 'Enter username or TID (e.g., T0001)';
+            } else {
+                label.textContent = 'Username';
+                usernameInput.placeholder = 'Enter your username';
+            }
+        }
+    </script>
+</body>
+</html>

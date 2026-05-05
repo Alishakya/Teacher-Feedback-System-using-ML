@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}Register as {{ role }} - Student Feedback Management System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <h4 class="mb-0">
+                        <i class="fas fa-user-plus"></i> Register as {{ role }}
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <h5 class="mb-3">Account Information</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="first_name" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="last_name" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="password1" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password1" name="password1" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="password2" class="form-label">Confirm Password</label>
+                                <input type="password" class="form-control" id="password2" name="password2" required>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <h5 class="mb-3">{{ role }} Information</h5>
+                        
+                        {% if role == 'Student' %}
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="student_id" class="form-label">Student ID</label>
+                                    <input type="text" class="form-control" id="student_id" name="student_id" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="batch" class="form-label">Batch</label>
+                                    <input type="text" class="form-control" id="batch" name="batch" placeholder="e.g., 2024" required>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="department" class="form-label">Department</label>
+                                    <input type="text" class="form-control" id="department" name="department" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="semester" class="form-label">Semester</label>
+                                    <input type="number" class="form-control" id="semester" name="semester" min="1" max="8" required>
+                                </div>
+                            </div>
+                        {% elif role == 'Teacher' %}
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="teacher_id" class="form-label">Teacher ID</label>
+                                    <input type="text" class="form-control" id="teacher_id" name="teacher_id" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="designation" class="form-label">Designation</label>
+                                    <input type="text" class="form-control" id="designation" name="designation" required>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="department" class="form-label">Department</label>
+                                    <input type="text" class="form-control" id="department" name="department" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="qualification" class="form-label">Qualification</label>
+                                    <textarea class="form-control" id="qualification" name="qualification" rows="2"></textarea>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="subjects" class="form-label">Subjects</label>
+                                <textarea class="form-control" id="subjects" name="subjects" rows="2"></textarea>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-user-plus"></i> Register
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center py-3">
+                    <p class="mb-0">
+                        Already have an account? 
+                        <a href="{% url 'login' %}" class="text-primary">Login here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

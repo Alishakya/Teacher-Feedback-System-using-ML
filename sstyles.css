@@ -1,0 +1,309 @@
+:root {
+    --primary-color: #4169E1;
+    --secondary-color: #f8f9fa;
+    --text-color: #333;
+    --border-color: #e0e0e0;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --sidebar-width: 250px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+body {
+    background-color: #f5f6f8;
+    color: var(--text-color);
+    display: flex;
+}
+
+.sidebar {
+    width: var(--sidebar-width);
+    height: 100vh;
+    background-color: white;
+    padding: 2rem 0;
+    position: fixed;
+    box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+}
+
+.logo {
+    padding: 0 2rem;
+    margin-bottom: 2rem;
+}
+
+.logo h2 {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-color);
+    font-weight: 500;
+    padding: 0.75rem 2rem;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.nav-links a.active,
+.nav-links a:hover {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+    border-left: 4px solid var(--primary-color);
+}
+
+.nav-links a i {
+    width: 20px;
+}
+
+main {
+    margin-left: var(--sidebar-width);
+    padding: 2rem;
+    width: calc(100% - var(--sidebar-width));
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.header h1 {
+    margin: 0;
+}
+
+.profile-container,
+.grades-container {
+    background: white;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.profile-info {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.profile-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.info-details {
+    flex: 1;
+}
+
+.info-details h2 {
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.info-details p {
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.enrolled-courses {
+    margin-top: 2rem;
+}
+
+.enrolled-courses h3 {
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+}
+
+.class-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.class-card {
+    background: var(--secondary-color);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    transition: transform 0.2s ease-in-out;
+}
+
+.class-card:hover {
+    transform: translateY(-2px);
+}
+
+.class-card h4 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.class-card p {
+    margin-bottom: 0.5rem;
+}
+
+.grades-container {
+    display: grid;
+    gap: 2rem;
+}
+
+.overall-grades {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.grades-detail {
+    margin-top: 2rem;
+}
+
+.grades-detail h3 {
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+}
+
+.grades-table {
+    width: 100%;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+th {
+    background-color: var(--secondary-color);
+    font-weight: 600;
+}
+
+.notifications-list {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.notification-item {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notification-icon {
+    color: var(--primary-color);
+    font-size: 1.2rem;
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-title {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.notification-time {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.logout-btn {
+    position: absolute;
+    bottom: 2rem;
+    left: 2rem;
+    right: 2rem;
+    background-color: var(--danger-color);
+    color: white;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    width: calc(100% - 4rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 60px;
+        padding: 1rem 0;
+    }
+
+    .logo {
+        padding: 0 0.5rem;
+    }
+
+    .logo h2 {
+        display: none;
+    }
+
+    .nav-links a span {
+        display: none;
+    }
+
+    .nav-links a {
+        padding: 0.75rem;
+        justify-content: center;
+    }
+
+    main {
+        margin-left: 60px;
+        width: calc(100% - 60px);
+    }
+
+    .logout-btn {
+        width: 40px;
+        left: 10px;
+        right: 10px;
+    }
+
+    .logout-btn span {
+        display: none;
+    }
+}
